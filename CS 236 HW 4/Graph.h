@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <limits>
+#include <unordered_set>
 
 using namespace std;
 
@@ -21,14 +22,22 @@ public:
 	void CreateEdgeList();
 	void PrintVertexDistances();
 	void FindShortestPath();
+	void AddEdge(int source, int destination);
+	void FindCycle(int target, int current, int prev);
 
 private:
 	int numVertices;
 	int numEdges;
 	int numRelaxation;
 	int sourceVertex;
+
+	bool cycleFound = false;
 	vector<Edge> edgeList;
 	vector<int> distances;
+
+	vector<vector<int>> adjacencyList;
+	vector<bool> visited;
+	vector<int> cycle;
 
 };
 
