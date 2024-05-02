@@ -1,5 +1,6 @@
 #include "Graph.h"
 
+//constructor to set graph with the correct properties
 Graph::Graph(int numV, int numE, int source) {
 	numVertices = numV;
 	numEdges = numE;
@@ -8,8 +9,8 @@ Graph::Graph(int numV, int numE, int source) {
 		sourceVertex = source;
 		distances[source] = 0;
 	}
-	else {
-		cout << "Source Vertex can only be between 0 and " << numE - 1 << ".\n";
+	else { //make sure source vetex is valid
+		cout << "Source Vertex can only be between 0 and " << numV - 1 << ".\n";
 		sourceVertex = 0;
 		distances[0] = 0;
 	}
@@ -17,16 +18,23 @@ Graph::Graph(int numV, int numE, int source) {
 	
 	numRelaxation = numV - 1;
 
-
 	adjacencyList.resize(numVertices);
 	visited.resize(numVertices, false);
 }
 
+
+//creates the list of edges
 void Graph::CreateEdgeList() {
 	for (int i = 0; i < numEdges; i++) {
 		cout << "Enter edge " << i + 1 << " properties: Source, Destination, Weight respectively\n";
 		int s, d, w;
 		cin >> s >> d >> w;
+		if (s > numVertices - 1 || d > numVertices - 1) {
+			cout << "\nSource vertex and/or destination cannot be greater than " << numVertices - 1;
+			cout << ".\nSetting source and destination to 0 and 1 respectively\n";
+			s = 0;
+			d = 1;
+		}
 		edgeList[i].source = s;
 		edgeList[i].destination = d;
 		edgeList[i].weight = w;
@@ -35,15 +43,19 @@ void Graph::CreateEdgeList() {
 	}
 }
 
+//prints the vertexes and distances if they are possible to reach
 void Graph::PrintVertexDistances() {
-
 	cout << "Vertex Distance from Source Vertex\n";
 	for (int i = 0; i < numVertices; i++) {
-		cout << i << "\t" << distances[i] << "\n";
+		if(distances[i] < INT_MAX)
+			cout << i << "\t" << distances[i] << "\n";
+		else
+			cout << i << "\t" << "Not Possible" << "\n";
 	}
 }
 
 void Graph::FindShortestPath() {
+	//bellman ford algorithm to find shortest path
 	for (int i = 0; i < numRelaxation; i++) {
 		for (int j = 0; j < numEdges; j++) {
 			int source = edgeList[j].source;
@@ -68,19 +80,18 @@ void Graph::FindShortestPath() {
 
 		if (distances[source] != MAX_INT) {
 			if (distances[source] + weight < distances[dest]) {
-				hasNegativeCycle = true;
-				//cout << source << " -> " << dest << " -> ";
-				//cycle.push_back(source);
+				hasNegativeCycle = true; //if a distance needs to be updated, there is a negative cycle
 				s = source;
 				d = dest;
 			}
 		}
 	}
 
+	//print the cycle
 	if (hasNegativeCycle) {
 		cout << "This graph contains a negative edge cycle with path: ";
 		cycle.push_back(d);
-		FindCycle(s, d, s);
+		FindCycle(s, d);
 		int cycleSize = cycle.size();
 		for (int i = cycleSize - 1; i > 0; i--) {
 			cout << cycle[i] << " -> ";
@@ -92,26 +103,25 @@ void Graph::FindShortestPath() {
 	}
 }
 
-
+//adds edge to adjacency list
 void Graph::AddEdge(int source, int destination) {
 	adjacencyList[source].push_back(destination);
 }
 
-void Graph::FindCycle(int target, int current, int prev) {
-	visited[current] = true;
+//finds the cycle and populates the cycle vector
+void Graph::FindCycle(int target, int current) {
+	visited[current] = true; //mark current vertex as visited to prevent infinite loop
 	if (current == target) {
-		cycle.push_back(target);
-		cycleFound = true;
-		return;
+		cycleFound = true; //if reached beginning of cycle, mark cycle as found
 	}
 	else {
 		for (int i = 0; i < adjacencyList[current].size(); i++) {
 			if (!cycleFound && visited[adjacencyList[current][i]] == false) {
-				FindCycle(target, adjacencyList[current][i], current);
+				FindCycle(target, adjacencyList[current][i]); //call function with next edge
 			}
 		}
 	}
 	if (cycleFound) {
-		cycle.push_back(current);
+		cycle.push_back(current); //add vertex to the cycle vector
 	}
 }

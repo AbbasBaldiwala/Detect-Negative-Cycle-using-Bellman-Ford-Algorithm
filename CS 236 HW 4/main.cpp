@@ -1,4 +1,11 @@
+//Abbas Baldiwala, CS 236, Spring 2024
+//Finding a Single Source Shortest Path and Detect a Negative Cycle with Bellman-Ford Algorithm
+
 #include "Graph.h"
+
+//vertex numbers must start at 0 and go up by 1
+//for example, if there are 4 vertices, they would be 0, 1, 2, 3
+//only prints one negative cycle, if two or more exist, only one will be printed
 
 int main() {
 	cout << "+++ Single Source Shortest Path with Bellman-Ford +++\n\n";
@@ -12,11 +19,18 @@ int main() {
 	cout << "Enter the source vertex number: ";
 	cin >> source;
 
+	cout << "\n";
+
+	//create grraph object
 	Graph G(numV, numE, source);
+
+	//greate the edge list for the bellman ford algorithm to use
 	G.CreateEdgeList();
 
+	//find the shortest path to each vertex, starting from the source vertex
 	G.FindShortestPath();
 
+	//print the shortest distances
 	G.PrintVertexDistances();
 }
 
@@ -26,7 +40,7 @@ int main() {
 */
 
 /*
-4 5 1 0 1 1 0 3 1 1 2 -4 2 1 2 2 3 3
+4 5 0 0 1 1 0 3 1 1 2 -4 2 1 2 2 3 3
 */
 
 /*
